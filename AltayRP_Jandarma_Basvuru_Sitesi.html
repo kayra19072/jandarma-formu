@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Altay RP Jandarma Başvuru</title>
+  <style>
+    body {
+      background-color: #0d0d0d;
+      font-family: Arial, sans-serif;
+      color: white;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      margin: 0;
+    }
+    h1 { color: #ff0000; margin-top: 10px; text-align: center; }
+    form {
+      background-color: #1a1a1a;
+      padding: 20px;
+      border-radius: 10px;
+      width: 90%;
+      max-width: 500px;
+      box-shadow: 0 0 15px rgba(255, 0, 0, 0.5);
+      transition: box-shadow 0.5s ease, transform 0.5s ease;
+      margin-top: 10px;
+    }
+    label { display: block; margin-top: 15px; }
+    input, textarea {
+      width: 100%;
+      padding: 10px;
+      margin-top: 5px;
+      border-radius: 5px;
+      border: none;
+    }
+    button {
+      background-color: #ff0000;
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 5px;
+      margin-top: 20px;
+      cursor: pointer;
+      width: 100%;
+    }
+    button:hover { background-color: #cc0000; }
+    .basari-efekti {
+      box-shadow: 0 0 20px 5px limegreen !important;
+      transform: scale(1.03);
+    }
+    img.logo {
+      max-width: 200px;
+      margin-bottom: 10px;
+    }
+    .sayac {
+      margin-top: 20px;
+      font-size: 18px;
+      color: #00ffcc;
+      text-align: center;
+    }
+  </style>
+</head>
+<body>
+  <img class="logo" src="https://files.oaiusercontent.com/file-1iMMR2LV14ocyzRdzhrn4z" alt="Jandarma Logo">
+  <h1>Altay RP Jandarma Başvuru</h1>
+  <div class="sayac">Toplam Başvuru Sayısı: <span id="sayac">0</span></div>
+  <form id="basvuruFormu" onsubmit="formuGonder(event)">
+    <label>IC İsim</label>
+    <input type="text" name="ic_isim" required>
+
+    <label>OC İsim</label>
+    <input type="text" name="oc_isim" required>
+
+    <label>Discord ID</label>
+    <input type="text" name="discord" required>
+
+    <label>Yaş</label>
+    <input type="number" name="yas" required>
+
+    <label>Toplam RP Saati</label>
+    <input type="number" name="saat" required>
+
+    <label><input type="checkbox" name="ck_onay" required> Gerekirse CK yemeyi kabul ediyorum.</label>
+    <label><input type="checkbox" name="ihrac_onay" required> Yeterince aktiflik sağlamazsam ihraç edilmeyi kabul ediyorum.</label>
+    <label><input type="checkbox" name="onay" required> Kuralları okudum ve kabul ediyorum.</label>
+
+    <button type="submit">Başvuruyu Gönder</button>
+  </form>
+
+  <script>
+    let basvuruSayisi = localStorage.getItem("jandarma_sayac") || 0;
+    document.getElementById("sayac").innerText = basvuruSayisi;
+
+    async function formuGonder(event) {
+      event.preventDefault();
+      const form = document.getElementById('basvuruFormu');
+      const data = new FormData(form);
+      const mesaj = {
+        content: "**Yeni Jandarma Başvurusu**\n"
+          + "**IC İsim:** " + data.get("ic_isim") + "\n"
+          + "**OC İsim:** " + data.get("oc_isim") + "\n"
+          + "**Discord ID:** " + data.get("discord") + "\n"
+          + "**Yaş:** " + data.get("yas") + "\n"
+          + "**Toplam RP Saati:** " + data.get("saat") + "\n"
+          + "**CK Kabul:** " + (data.get("ck_onay") ? "✅" : "❌") + "\n"
+          + "**İhraç Kabul:** " + (data.get("ihrac_onay") ? "✅" : "❌") + "\n"
+          + "**Kurallar Onay:** " + (data.get("onay") ? "✅" : "❌")
+      };
+
+      await fetch("https://discord.com/api/webhooks/1395926823564742666/AY1-6TIJ5hY5X5eoVUOu7LKzfF4KbIbRi_xpVjLBhdiV6XNrEtM4cMA-WsxdvTCCsdYJ", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(mesaj)
+      });
+
+      basvuruSayisi++;
+      localStorage.setItem("jandarma_sayac", basvuruSayisi);
+      document.getElementById("sayac").innerText = basvuruSayisi;
+
+      const tumElemanlar = form.querySelectorAll('input, button, textarea');
+      tumElemanlar.forEach(e => e.disabled = true);
+      form.classList.add("basari-efekti");
+      alert("Başvurunuz alınmıştır. Tekrar gönderemezsiniz.");
+    }
+  </script>
+</body>
+</html>
